@@ -43,13 +43,17 @@ class TestHTMLNode(unittest.TestCase):
 
 
 
-    def test_to_html_with_no_children(self):
-        parent_node = ParentNode("div", [])
-        self.assertRaises(ValueError)
+    def test_init_parent_node_with_no_children(self):
+        self.assertRaises(ValueError, ParentNode, "div", [])
 
-    def test_to_html_with_None_children(self):
-        parent_node = ParentNode("div", None)
-        self.assertRaises(ValueError)
+    def test_init_parent_node_with_None_children(self):
+        self.assertRaises(ValueError, ParentNode, "div", None)
+
+    def test_init_parent_node_with_no_grandchildren(self):
+        with self.assertRaises(ValueError):
+            child_node = ParentNode("span", [])
+            parent_node = ParentNode("div", [child_node])
+
 
     def test_to_html_with_children(self):
         child_node = LeafNode("span", "child")
@@ -60,11 +64,6 @@ class TestHTMLNode(unittest.TestCase):
         child_node = LeafNode("span", "child")
         parent_node = ParentNode("div", [child_node, child_node, child_node, child_node, child_node])
         self.assertEqual(parent_node.to_html(), "<div><span>child</span><span>child</span><span>child</span><span>child</span><span>child</span></div>")
-
-    def test_to_html_with_no_grandchildren(self):
-        child_node = ParentNode("span", [])
-        parent_node = ParentNode("div", [child_node])
-        self.assertRaises(ValueError)
 
     def test_to_html_with_grandchildren(self):
         grandchild_node = LeafNode("b", "grandchild")

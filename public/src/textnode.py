@@ -20,7 +20,7 @@ class TextNode:
         return self.text_type==other
 
     def __repr__(self):
-        return f"TextNode({self.text}, {self.text_type}, {self.url})"
+        return f'TextNode("{self.text}", {self.text_type}, "{self.url}")' if self.url is not None else f'TextNode("{self.text}", {self.text_type})'
 
 
 
