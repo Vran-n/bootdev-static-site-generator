@@ -231,7 +231,7 @@ def extract_markdown_images(text:str):
 
 
 
-def text_to_textnodes(text:str):
+def text_to_textnodes(text:str) -> list[TextNode]:
     nodes = [TextNode(text, TextType.PLAIN_TEXT)]
 
     bold_result = split_nodes_delimiter(nodes, "*", TextType.BOLD_TEXT)
