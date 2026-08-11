@@ -34,8 +34,8 @@ def header_block_to_html(block:str) -> ParentNode:
 
 
 def quote_block_to_html(block:str) -> ParentNode:
-    text = block.lstrip(">")
-
+    text = block.lstrip("> ").replace("\n>", "")
+    
     textnodes = text_to_textnodes(text)
     children = []
     for textnode in textnodes:
@@ -86,7 +86,7 @@ def code_block_to_html(block:str) -> LeafNode:
     final = ParentNode("pre", [leaf])
     return final
 
-def markdown_to_html_node(markdown:str):
+def markdown_to_html_node(markdown:str) -> ParentNode:
     blocks = markdown_to_blocks(markdown)
     children = []
 
@@ -98,7 +98,7 @@ def markdown_to_html_node(markdown:str):
                 htmlnode = paragraph_block_to_html(block)
                 children.append(htmlnode)
             case BlockType.HEADING:
-                htmlnode = header_to_html(block)
+                htmlnode = header_block_to_html(block)
                 children.append(htmlnode)
             case BlockType.QUOTE:
                 htmlnode = quote_block_to_html(block)

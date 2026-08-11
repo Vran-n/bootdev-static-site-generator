@@ -129,6 +129,7 @@ class Trie:
             i += 1
 
         if Reached_End_Symbol is False:
+            #print("|||", text)
             raise Exception("Incorrect Regex!")
 
         if len(built_text) > 0:
@@ -137,12 +138,75 @@ class Trie:
         return split_text
 
 
+    # another temp fix because it erros if "!" is matched with no seps
+    def use_as_splitter_for_image(self, text: str) -> list[(bool, str, str)]:
+        capture = ["[]", "()"]
+        split_text = []
+        built_text = ""
+        Reached_End_Symbol = True
+
+        i, cap_i = 0, 0
+        while i < len(text):
+            current = self.root
+
+            char = text[i]
+            if char not in current: 
+                built_text += char
+                i += 1
+                continue
+            # here if char in current
+
+            if char == "!":
+                try: 
+                    if text[i+1] == " ": i += 1 ; continue
+                except IndexError: break
+
+            split_text.append((False, built_text, None))
+            built_text = ""
+            temp_list = [True]
+
+            for j in range(i, len(text)):
+                inner_char = text[j]
+
+                if inner_char not in current: 
+                    built_text += inner_char
+                    continue
+                
+                if inner_char != "!" and Reached_End_Symbol is True:
+                    Reached_End_Symbol = False
+
+                if inner_char in capture[cap_i][1] and cap_i <= 1:
+                    temp_list.append(built_text)
+                    built_text = ""
+                    cap_i += 1
+                    
+                current = current[inner_char]
+                if self.end_symbol in current:
+                    Reached_End_Symbol = True
+                    current = self.root
+                    i = j
+                    cap_i = 0
+                    break
+
+            combined = tuple(temp_list)
+            split_text.append(combined)
+            i += 1
+
+        if Reached_End_Symbol is False:
+            raise Exception("Incorrect Regex!")
+
+        if len(built_text) > 0:
+            split_text.append((False, built_text, None))
+
+        return split_text
+
 regex_markdown = Trie()
 regex_markdown.add("****")
 regex_markdown.add("__")
 regex_markdown.add("``")
-regex_markdown.add("![]")
-regex_markdown.add("()")
+# 
+regex_markdown_image = Trie()
+regex_markdown_image.add("![]()")
 
 # shrimple solution to nearly identical regex
 regex_markdown_link = Trie()
@@ -207,8 +271,8 @@ def split_nodes_image(
             new_nodes.append(TextNode(node.text, node.text_type, node.url))
             continue
 
-        result = regex_markdown.use_as_multi_splitter(node.text, "![]", "()")
-        
+        result = regex_markdown_image.use_as_splitter_for_image(node.text)
+
         for pair in result:
             is_in_sep = pair[0]
             actual_text = pair[1]

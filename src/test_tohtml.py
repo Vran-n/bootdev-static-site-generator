@@ -75,15 +75,20 @@ this is a text
 
 > quote
 > what?? is?? this??
+
+> "I am in fact a Hobbit in all but size."
+>
+> -- J.R.R. Tolkien
 """)
         expected = [
-            "<blockquote> quote <b>lol</b></blockquote>",
-            "<blockquote> quote <i>woah</i></blockquote>",
-            "<blockquote> quote <code>code</code></blockquote>",
-            '<blockquote> quote <a href=".com">a link</a></blockquote>',
-            '<blockquote> quote <img src=".ok" alt="an img"></img></blockquote>',
-            "<blockquote> quote</blockquote>",
-            "<blockquote> quote\n> what?? is?? this??</blockquote>"
+            "<blockquote>quote <b>lol</b></blockquote>",
+            "<blockquote>quote <i>woah</i></blockquote>",
+            "<blockquote>quote <code>code</code></blockquote>",
+            '<blockquote>quote <a href=".com">a link</a></blockquote>',
+            '<blockquote>quote <img src=".ok" alt="an img"></img></blockquote>',
+            "<blockquote>quote</blockquote>",
+            "<blockquote>quote what?? is?? this??</blockquote>",
+            '<blockquote>"I am in fact a Hobbit in all but size." -- J.R.R. Tolkien</blockquote>'
         ]
 
         for i in range(len(blocks)):

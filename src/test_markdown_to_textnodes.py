@@ -148,6 +148,32 @@ class TestMarkdown_to_TextNodes(unittest.TestCase):
             new_nodes,
         )
 
+    def test_split_nodes_image_2(self):
+        node = TextNode(
+            "This is text with an image! test",
+            TextType.PLAIN_TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an image! test", TextType.PLAIN_TEXT),
+            ],
+            new_nodes,
+        )
+
+    def test_split_nodes_image_2(self):
+        node = TextNode(
+            "This is text with an image test!",
+            TextType.PLAIN_TEXT,
+        )
+        new_nodes = split_nodes_image([node])
+        self.assertListEqual(
+            [
+                TextNode("This is text with an image test!", TextType.PLAIN_TEXT),
+            ],
+            new_nodes,
+        )
+
     def test_split_nodes_no_image(self):
         node = TextNode(
             "This is text with no images",
