@@ -1,6 +1,8 @@
 import logging
 import shutil
 import os
+import sys
+import re
 
 from extract_title import extract_title
 from tohtml import markdown_to_html_node
@@ -13,10 +15,14 @@ HTML_TEMPLATE_FILE_NAME = "template"
 HTML_TEMPLATE_PATH = os.path.join(".", f"{HTML_TEMPLATE_FILE_NAME}.html")
 
 STATIC_PATH = "./static"
-PUBLIC_PATH = "./public"
-public_exists = os.path.exists(PUBLIC_PATH)
-if public_exists is False:
-    os.mkdir(PUBLIC_PATH)
+#PUBLIC_PATH = "./public"
+#public_exists = os.path.exists(PUBLIC_PATH)
+#if public_exists is False:
+#    os.mkdir(PUBLIC_PATH)
+DOC_PATH = "./doc"
+doc_exists = os.path.exists(DOC_PATH)
+if doc_exists is False:
+    os.mkdir(DOC_PATH)
 
 
 
@@ -47,7 +53,7 @@ def copy_and_move_all(src_path:str, dst_path:str):
         elif Is_File is True:
             shutil.copy(item_path, new_dst_path)
 
-def generate_page(from_path, template_path, dest_path):
+def generate_page(base_path, from_path, template_path, dest_path):
     print(f"Generating new page from {from_path} to {dest_path} using {template_path}")
 
     md_file = os.path.join(from_path, f"{MARKDOWN_FILE_NAME}.md")
@@ -60,6 +66,7 @@ def generate_page(from_path, template_path, dest_path):
 
     html_template = html_template_file.read()
     html_template = html_template.replace("{{ Title }}", title).replace("{{ Content }}", content)
+    html_template = html_template.replace('href="/', f'href="{base_path}').replace('src="/', f'src="{base_path}')
     markdown_file.close(); html_template_file.close()
 
     new_html_file_path = os.path.join(dest_path, "index.html")
@@ -67,7 +74,7 @@ def generate_page(from_path, template_path, dest_path):
     new_html_file.write(html_template)
     new_html_file.close()
 
-def generate_pages_recursive(from_path, template_path, dest_path):
+def generate_pages_recursive(base_path, from_path, template_path, dest_path):
     print(f"Creating new pages from {from_path} to {dest_path} using {template_path}")
 
     children = os.listdir(from_path)
@@ -78,7 +85,7 @@ def generate_pages_recursive(from_path, template_path, dest_path):
         
         if Is_File is True:
             print(item_path, Is_File, Is_Dir)
-            generate_page(from_path, template_path, dest_path)
+            generate_page(base_path, from_path, template_path, dest_path)
         elif Is_Dir is True:
             dir_src_path = os.path.join(from_path, item)
             dir_dst_path = os.path.join(dest_path, item)
@@ -87,13 +94,18 @@ def generate_pages_recursive(from_path, template_path, dest_path):
             if dir_dst_exists is False:
                 os.mkdir(dir_dst_path)
 
-            generate_pages_recursive(dir_src_path, template_path, dir_dst_path)
+            generate_pages_recursive(base_path, dir_src_path, template_path, dir_dst_path)
 
 
 def main():
-    remove_all(PUBLIC_PATH)
-    copy_and_move_all(STATIC_PATH, PUBLIC_PATH)
-    generate_pages_recursive(CONTENT_PATH, HTML_TEMPLATE_PATH, PUBLIC_PATH)
+    base_path = "/"
+    args = sys.argv
+    if len(args) > 1:
+        base_path = args[1]
+
+    remove_all(DOC_PATH)
+    copy_and_move_all(STATIC_PATH, DOC_PATH)
+    generate_pages_recursive(base_path, CONTENT_PATH, HTML_TEMPLATE_PATH, DOC_PATH)
     
 
 if __name__ == '__main__':
