@@ -19,7 +19,7 @@ STATIC_PATH = "./static"
 #public_exists = os.path.exists(PUBLIC_PATH)
 #if public_exists is False:
 #    os.mkdir(PUBLIC_PATH)
-DOC_PATH = "./doc"
+DOC_PATH = "./docs"
 doc_exists = os.path.exists(DOC_PATH)
 if doc_exists is False:
     os.mkdir(DOC_PATH)
